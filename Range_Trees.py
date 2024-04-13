@@ -50,7 +50,7 @@ def withinRange(point, range , check):
     elif check == 2:
         x = point[0]
         y = point[1]
-        print(x, y)
+        #print(x, y)
         if (x >= range[0][0]   and x <= range[0][1]  and y >= range[1][0]  and y <= range[1][1] ) :
             return True
         else:
@@ -88,7 +88,7 @@ def FindSplitNode(root, p_min , p_max, dim, enable ):
         enable      : True when we need to read first coord of point when used as a helper function by 2D range search
     Returns : A Node
     '''
-    print(dim, enable)
+    #print(dim, enable)
     splitnode = root
     while splitnode != None:
         node = getValue(splitnode, enable, dim)
@@ -113,16 +113,18 @@ def SearchRangeTree1d (tree, p1, p2, dim = 1, enable = True):
         enable      : True when we need to read first coord of point when used as a helper function by 2D range search
     Returns : list of result of range query
     '''
+    #print("this", tree.value)
     nodes = []
     #print("AS")
     #print(tree)
-    print(enable, dim)
+    #print(enable, dim)
     splitnode = FindSplitNode(tree , p1, p2, dim, enable)
     # print("asqw")
-    #print(getValue(splitnode, True, 1))
+    #print(dim, enable, getValue(splitnode, enable, dim))
     if splitnode == None:
         return nodes
     elif withinRange(getValue(splitnode, enable, dim) , [(p1, p2)], 1):
+        print("appended", splitnode.value)
         nodes.append(splitnode.value)
     nodes += SearchRangeTree1d(splitnode.left, p1, p2, dim, enable)
     # print("Adsa")
@@ -143,40 +145,43 @@ def SearchRangeTree2d (tree, x1, x2, y1, y2, dim ):
     '''
     results = []
     splitnode = FindSplitNode(tree, x1, x2, 2, True)
-    print(splitnode.value)
+    #print("split", splitnode.value)
     if (splitnode == None):
         return results
-    elif withinRange(splitnode.value, [[x1, x2], [y1, y2]], 2) :
-        # print("sa")
+    if withinRange(splitnode.value, [[x1, x2], [y1, y2]], 2) :
+        #print("sa")
         results.append(splitnode.value)
-        vl = splitnode.left 
-        while ( vl != None ):
-            # print("as")
-            if withinRange(vl.value, [(x1, x2), (y1, y2)], 2):
-                # print("s")
-                results.append(vl.value)
-            if (x1 <= vl.value[0]):
-                # print("q")
-                if vl.right != None:
-                    # print("Y")
-                    results += SearchRangeTree1d(vl.right.assoc, y1, y2, dim, False)
-                    # print("vb")
-                vl = vl.left
-            else:
-                vl = vl.right
 
-        vr = splitnode.right
-        while ( vr != None ):
-            if withinRange(vr.value, [(x1, x2), (y1, y2)], 2):
-                    results.append(vr.value)
-            if ( x2 >= vr.value[0] ):
-                if vr.left != None:
-                    results += SearchRangeTree1d(vr.left.assoc, y1, y2, dim, False)
-                vr = vr.right
-            else:
-                    vr = vr.left
-        
-        return results
+    vl = splitnode.left 
+    while ( vl != None ):
+        # print("as")
+        #print("ycheck", vl.value)
+        if withinRange(vl.value, [[x1, x2], [y1, y2]], 2):
+            #print("appended")
+            results.append(vl.value)
+        if (x1 < vl.value[0]):
+            #print("q")
+            if vl.right != None:
+                # print("Y")
+                results += SearchRangeTree1d(vl.right.assoc, y1, y2, dim, False)
+                # print("vb")
+            vl = vl.left
+        else:
+            vl = vl.right
+            #print(vl.value)
+
+    vr = splitnode.right
+    while ( vr != None ):
+        if withinRange(vr.value, [(x1, x2), (y1, y2)], 2):
+                results.append(vr.value)
+        if ( x2 > vr.value[0] ):
+            if vr.left != None:
+                results += SearchRangeTree1d(vr.left.assoc, y1, y2, dim, False)
+            vr = vr.right
+        else:
+                vr = vr.left
+    
+    return results
 
 
 def ConstructRangeTree1d(data):
@@ -255,13 +260,13 @@ if dim == 1:
     ans = SearchRangeTree1d(node, mn, mx, 1, True)
 else:
     node = ConstructRangeTree2d(data)
-    mnx = int(input("X min"))
-    mny = int(input("Y min"))
-    mxx = int(input("X max"))
-    mxy = int(input("Y max"))
+    mnx = int(input())
+    mny = int(input())
+    mxx = int(input())
+    mxy = int(input())
     ans = SearchRangeTree2d(node, mnx, mxx, mny, mxy, dim)
 
-print(ans)
+print("points" , ans)
     
     
 
