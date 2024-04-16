@@ -211,78 +211,49 @@ def ConstructRangeTree1d(data):
     if not data:
         return None
     if len(data) == 1:
-        node = Node(data[0])
+        node = Node(data[0][0])
         node.isLeaf = True
     else:
-        mid_val = len(data)//2
+        mid_val = (len(data)-1)//2
         node = Node(data[mid_val][0])
         node.left = ConstructRangeTree1d(data[:mid_val])
         node.right = ConstructRangeTree1d(data[mid_val+1:])
+    #print("c", node.value)
     return node
 
-'''def ConstructRangeTree2d(data, enable=True):
-    
-    Construct a 2 dimensional range tree
-
-    Arguments:
-        data         : The data to be stored in range tree
-        enable       : to toggle whether to build the xtree or ytree
-    Returns:
-        Root node of the entire tree
-    
-    data.sort(reverse = False, key=lambda x: x[0])
-    #print(data)
-    if not data:
-        return None
-    if len(data) == 1:
-        node = Node(data[0])
-        node.isLeaf = True
-    else:
-        mid_val = len(data)//2
-        node = Node(data[mid_val])  # node.value = (x,y)
-        node.left = ConstructRangeTree2d(data[:mid_val], enable)
-        node.right = ConstructRangeTree2d(data[mid_val+1:], enable)
-    if enable:
-        node.assoc = ConstructRangeTree2d( sorted(data, key=lambda x: x[1]), enable=False)
-    return node
-
-#date1, date2,  param1=None, x1=None, x2=None, dimension=1):
-    
-    Handles all function calls
-
-    Arguments:
-        Countries   : A country name from the drop down list. String data type.
-        date1       : Starting date for range query
-        date2       : Ending date for range query
-        param1      : The first column number to be read from the excel file . By default is None else should be a valid integer value
-        x1          : Starting value for range query related to param1. By default is None
-        x2          : Ending value for range query related to param1. By default is None
-        dimension   : specifies the dimension of range tree. By default 1
-
-    Returns : None
-    '''
-def merge(yl:ListNode,yr:ListNode):
+def merge(yl:ListNode,yr:ListNode, val):
+    #print("sad", val)
     y=ListNode()
-    l = []
-    if(yl):
-        l=yl.list
-    if(yr):
-        l.append(yr.list)
+    l = [ListNodeNode(val)]
+
+    if(yl != None):
+        l = l+yl.list
+    if(yr != None):
+        l = l+yr.list
     if(len(l)==0):
         return None
-    
+    #else:
+
+        #for i in l:
+           #print(i.value)
     l.sort(reverse=False,key=lambda x:x.value)
     for i in l:
-        left_index=bisect.bisect_left(yl.list, i.value, lo=0, hi=len(yl.list),key=lambda x:x.value)
-        if(left_index>=len(yl.list)):
-            i.left=None
+        if(yl):
+            left_index=bisect.bisect_left(yl.list, i.value, lo=0, hi=len(yl.list),key=lambda x:x.value)
+            if(left_index>=len(yl.list)):
+                i.left=None
+            else:
+                i.left=yl.list[left_index]
         else:
-            i.left=yl.list[left_index]
-        right_index=bisect.bisect_left(yr.list, i.value, lo=0, hi=len(yr.list),key=lambda x:x.value)
-        if(right_index>=len(yr.list)):
-            i.right=None
+            i.left = None
+        if(yr):
+            right_index=bisect.bisect_left(yr.list, i.value, lo=0, hi=len(yr.list),key=lambda x:x.value)
+            if(right_index>=len(yr.list)):
+                i.right=None
+            else:
+                i.right=yr.list[right_index]
         else:
-            i.right=yr.list[right_index]
+            i.right = None
         if(i.left==None and i.right==None):
             i.isleaf=True
         else:
@@ -294,33 +265,69 @@ def merge(yl:ListNode,yr:ListNode):
         y.isleaf=  True
     else:
         y.isleaf = False
+    #for i in y.list:
+        #print(i.value)
     return y    
 
 def ConstructFrac(l, r, data, node:Node):
+    print("kins", l, r)
     if node==None:
         return None
+    #else:
+        #print("s", node.value)
     if l>r:
+        #print("ad")
         return None
     if(l==r):
         n = ListNodeNode(data[l][1])
+        #print(n.value)
+        y = ListNode()
+        y.list = [n]
+        #print("sww", len(y.list))
+        node.assoc = y
+        #for i in y.list:
+            #print(i.value)
+        #print("Asd")
+        return y
 
-    mid = l + ((r-l)//2)
-    y_l = ConstructFrac(l, mid, data, node.left)
+    mid = (r-l)//2
+    #print("m", data[mid])
+    y_l = ConstructFrac(l, mid-1, data, node.left)
     y_r = ConstructFrac(mid+1, r, data, node.right)
-    y = merge(y_l, y_r)
+    #print("sad", data[mid][1])
+    y = merge(y_l, y_r, data[mid][1])
+    #print("done")
     node.assoc = y
+    #for i in y.list:
+        #print(i.value)
     return y
+
+def InOrder(ynode:ListNode):
+    if ynode==None:
+        #print("Sd")
+        return 
+    else:
+        InOrder(ynode.left)
+        for i in ynode.list:
+            print(i.value)
+        print(" ")
+        InOrder(ynode.right)
+
+    return 
 
 data = LoadData(2)
 data.sort(reverse = False, key=lambda x:x[0])
 #print(data)
 
 node = ConstructRangeTree1d(data)
+print(data)
 ynode = ConstructFrac(0, len(data)-1, data, node)
-mnx = int(input())
-mny = int(input())
-mxx = int(input())
-mxy = int(input())
+#print("A")
+InOrder(ynode)
+#mnx = int(input())
+#mny = int(input())
+#mxx = int(input())
+#mxy = int(input())
 #ans = SearchRangeTree2d(node, mnx, mxx, mny, mxy, 2)
 
 
