@@ -13,14 +13,12 @@ class Node(object):
         self.assoc = None
 
 class ListNodeNode(object):
-
     def __init__(self, value) -> None:
         self.value = value
         self.left = None
         self.right = None
 
 class ListNode():
-
     def __init__(self) ->None:
         self.list=[]
         self.left=None
@@ -151,7 +149,6 @@ def SearchRangeTree2d (tree, x1, x2, y1, y2, dim ):
             if vr.left != None:
                 results += SearchRangeTree1d(vr.left.assoc, y1, y2, dim, False)
             vr = vr.right
-
         else:
                 vr = vr.left
     
@@ -160,6 +157,7 @@ def SearchRangeTree2d (tree, x1, x2, y1, y2, dim ):
 def ConstructRangeTree1d(data):
 
     data.sort(reverse = False, key=lambda x: x[0])
+    #print(data)
     if not data:
         return None
     
@@ -169,16 +167,15 @@ def ConstructRangeTree1d(data):
 
     else:
         mid_val = (len(data)-1)//2
+        # print(data[mid_val][0])
         node = Node(data[mid_val][0])
         node.left = ConstructRangeTree1d(data[:mid_val+1])
         node.right = ConstructRangeTree1d(data[mid_val+1:])
-
+    #print("c", node.value)
     return node
 
-def merge(yl:ListNode, yr:ListNode):
-
-
-
+def merge(yl:ListNode,yr:ListNode, val):
+    #print("sad", val)
     y=ListNode()
     l = []
 
@@ -312,4 +309,4 @@ InOrder(ynode)
 #ans = SearchRangeTree2d(node, mnx, mxx, mny, mxy, 2)
 
 
-#print("points" , ans)
+#print("points" , ans)
