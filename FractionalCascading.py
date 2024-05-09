@@ -109,7 +109,6 @@ def SearchRangeTree1d (tree:Node,frac:ListNode,data,x1,x2,y1,y2,z1,z2):
     if(z1>z2):
         return []
     if(x1<=z1 and z2<=x2):
-        print("gandu")
         return find_y(tree,frac,data,y1,y2)
     if(tree.isLeaf):
         if(x1<=x2 and x1<=tree.value<=x2 ):
@@ -318,14 +317,24 @@ def ConstructFrac(l, r, data, node:Node):
 data = LoadData(2)
 data.sort(reverse = False, key=lambda x:x[0])
 node = ConstructRangeTree1d(data)
-print(data)
+# print(data)
 ynode = ConstructFrac(0, len(data)-1, data, node)
 # Display(ynode)
+print("Enter minimum value of x")
 mnx = int(input())
+print("Enter minimum value of y")
 mny = int(input())
+print("Enter maximum value of x")
 mxx = int(input())
+print("Enter maximum value of y")
 mxy = int(input())
 ans = SearchRangeTree1d(node,ynode, data, mnx, mxx, mny, mxy, -100000, 100000)
 
 
-print("points",ans)
+if mnx > mxx or mny > mxy:
+    print("Invalid Argument")
+elif not ans:
+    print("No points found in the given range")
+else:
+    print("Points in given range:", ans)
+
