@@ -17,6 +17,7 @@ class ListNodeNode(object):
         self.value = value
         self.left = None
         self.right = None
+        self.index = None
 
 class ListNode():
     def __init__(self) ->None:
@@ -24,6 +25,7 @@ class ListNode():
         self.left=None
         self.right=None
         self.isleaf=None
+
 
 def LoadData(dim):
 
@@ -100,33 +102,53 @@ def FindSplitNode(root, p_min , p_max, dim, enable ):
 
     return splitnode
 
-def SearchRangeTree1d (tree, p1, p2, dim = 1, enable = True):
+def SearchRangeTree1d (tree:Node,frac:ListNode,data,x1,x2,y1,y2,z1,z2):
+    res=[]
+    if(x1>x2):
+        return []
+    if(z1>z2):
+        return []
+    if(x1<=z1 and z2<=x2):
+        print("gandu")
+        return find_y(tree,frac,data,y1,y2)
+    if(tree.isLeaf):
+        if(x1<=x2 and x1<=tree.value<=x2 ):
+            return find_y(tree,frac,data,y1,y2)
+        else:
+            return []
+    if(tree.value<x1):
+        res+=SearchRangeTree1d(tree.right,frac,data,x1,x2,y1,y2,z1,z2)
+        return res
+    elif(tree.value>x2):
+        res+=SearchRangeTree1d(tree.left,frac,data,x1,x2,y1,y2,z1,z2)
+        return res
+    res+=SearchRangeTree1d(tree.right,frac,data,tree.value,x2,y1,y2,tree.value,z2)
+    res+=SearchRangeTree1d(tree.left,frac,data,x1,tree.value,y1,y2,z1,tree.value)
+    return res
 
-    nodes = []
-    splitnode = FindSplitNode(tree , p1, p2, dim, enable)
-   
-    if splitnode == None:
-        return nodes
-    
-    elif withinRange(getValue(splitnode, enable, dim) , [(p1, p2)], 1):
-        print("appended", splitnode.value)
-        nodes.append(splitnode.value)
+def find_y(tree,frac,data,y1,y2):
+    result=[]
+    l_y=tree.assoc
+    i=0
+    while(i<len(l_y.list)):
+        if(y1<=l_y.list[i].value<=y2):
+            result.append(data[l_y.list[i].index])
+            i+=1
+        else:
+            break
+    return result
 
-    nodes += SearchRangeTree1d(splitnode.left, p1, p2, dim, enable)
-    nodes += SearchRangeTree1d(splitnode.right, p1, p2, dim, enable)
 
-    return nodes
-
-def SearchRangeTree2d (tree, x1, x2, y1, y2, dim ):
+def SearchRangeTree2d (tree:Node,frac:ListNode,x1, x2, y1, y2, dim ):
     
     results = []
-    splitnode = FindSplitNode(tree, x1, x2, 2, True)
+    splitnode = FindSplitNode(tree,x1, x2, 2, True)
 
     if (splitnode == None):
+
         return results
     
-    if withinRange(splitnode.value, [[x1, x2], [y1, y2]], 2) :
-        results.append(splitnode.value)
+    
 
     vl = splitnode.left 
 
@@ -184,7 +206,7 @@ def ConstructRangeTree1d(data):
 def merge(yl:ListNode,yr:ListNode):
     y=ListNode()
     l = []
-
+    
     if(yl != None):
         l = l+yl.list
 
@@ -249,8 +271,10 @@ def ConstructFrac(l, r, data, node:Node):
     
     if(l==r):
         n = ListNodeNode(data[l][1])
+        # print(l)
         y = ListNode()
         y.list = [n]
+        n.index = l
         node.assoc = y
         return y
 
@@ -261,7 +285,7 @@ def ConstructFrac(l, r, data, node:Node):
     node.assoc = y
     return y
 
-def Display(root:ListNode):
+# def Display(root:ListNode):
 
     if root is None:
         return
@@ -279,7 +303,7 @@ def Display(root:ListNode):
             node = queue.pop(0)
 
             for i in node.list:
-                print(i.value)
+                print(f"{i.value} {i.index}")
             print()
 
             if node.left:
@@ -296,12 +320,12 @@ data.sort(reverse = False, key=lambda x:x[0])
 node = ConstructRangeTree1d(data)
 print(data)
 ynode = ConstructFrac(0, len(data)-1, data, node)
-Display(ynode)
-#mnx = int(input())
-#mny = int(input())
-#mxx = int(input())
-#mxy = int(input())
-#ans = SearchRangeTree2d(node, mnx, mxx, mny, mxy, 2)
+# Display(ynode)
+mnx = int(input())
+mny = int(input())
+mxx = int(input())
+mxy = int(input())
+ans = SearchRangeTree1d(node,ynode, data, mnx, mxx, mny, mxy, -100000, 100000)
 
 
-#print("points" , ans)
+print("points",ans)
