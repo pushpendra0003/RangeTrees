@@ -22,7 +22,7 @@ class ListNodeNode(object):
 
 class ListNode():
     def __init__(self) ->None:
-        self.list=None
+        self.list=[]
         self.left=None
         self.right=None
         self.isleaf=None
